@@ -1,6 +1,4 @@
-const headers = {
-  "Content-Type": "application/json"
-};
+import { headers } from "@/const/index";
 const booksAPI = {
   loadBooks: () =>
     fetch(process.env.REACT_APP_API_URL + "books", {

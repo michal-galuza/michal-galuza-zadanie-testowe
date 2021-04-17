@@ -1,6 +1,4 @@
-const headers = {
-  "Content-Type": "application/json"
-};
+import { headers } from "@/const/index";
 const publishersAPI = {
   loadPublishers: () =>
     fetch(process.env.REACT_APP_API_URL + "publishers", {
@@ -8,31 +6,24 @@ const publishersAPI = {
       headers: headers
     })
       .then(res => res.json())
-      .then(result => {
-        const arr = [];
-        Object.keys(result).map(key => arr.push(result[key]));
-        arr.sort((a, b) => a.title.localeCompare(b.title));
-        return arr;
-      })
+      .then(result => result)
       .catch(err => {
         console.log(err);
         return false;
       }),
-  deletePublisher: id => {
+  deletePublisher: id =>
     fetch(process.env.REACT_APP_API_URL + "publishers/" + id, {
       method: "DELETE",
       headers: headers
     })
       .then(res => res.json())
       .then(result => {
-        console.log(result);
         return result;
       })
       .catch(err => {
         console.log(err);
         return false;
-      });
-  },
+      }),
   addPublisher: payload =>
     fetch(process.env.REACT_APP_API_URL + "publishers", {
       method: "POST",

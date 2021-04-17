@@ -12,9 +12,11 @@ import {
 } from "redux-persist";
 import booksReducer from "./books/books";
 import authorsReducer from "./authors/authors";
+import messageReducer from "./message/message";
 const reducers = combineReducers({
   books: booksReducer,
-  authors: authorsReducer
+  authors: authorsReducer,
+  message: messageReducer
 });
 const persistConfig = {
   key: "root",

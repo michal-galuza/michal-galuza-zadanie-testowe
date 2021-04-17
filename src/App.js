@@ -1,31 +1,59 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import styled from "styled-components";
-import "./App.css";
 import NavBar from "./components/NavBar/NavBar";
 import notFound from "./views/404/404";
 import AuthorsEdit from "./views/Authors/AuthorsEdit";
 import Authors from "./views/Authors/Authors";
-import Books from "./views/Books/Books";
-import EditBook from "./views/Books/BooksEdit";
-import Publishers from "./views/PublishingHouse/Publishers";
-import PublishersEdit from "./views/PublishingHouse/PublishersEdit";
-import Home from "./views/Home/Home";
 import AuthorsAdd from "./views/Authors/AuthorsAdd";
-
+import { useDispatch, useSelector } from "react-redux";
+import { authorsState, loadAuthors } from "./state/authors/authors";
+import { useEffect } from "react";
+import { loadingStatus } from "./consts";
+import authorsAPI from "./apiHelper/authorsAPI";
+import { setMessage } from "./state/message/message";
+import TopBar from "./components/TopBar/TopBar";
 function App() {
+  const dispatch = useDispatch();
+  const authors = useSelector(authorsState);
+
+  useEffect(() => {
+    if (
+      authors.status === loadingStatus.INITIAL ||
+      authors.status === loadingStatus.REFRESH
+    ) {
+      dispatch(setMessage("Pobieram liste autorów"));
+      console.log(typeof authorsAPI.loadAuthors);
+      authorsAPI
+        .loadAuthors()
+        .then(response => {
+          if (!response) {
+            dispatch(setMessage("Nie udało się pobrać listy autorów "));
+          }
+          if (response.message) {
+            dispatch(setMessage(response.message));
+          }
+
+          dispatch(setMessage(""));
+          return dispatch(loadAuthors(response));
+        })
+        .catch(() =>
+          dispatch(setMessage("Nie udało się pobrać listy autorów "))
+        );
+    }
+  }, [authors, dispatch]);
   return (
     <Router>
       <NavBar />
       <Main>
         <Switch>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/books" component={Books} />
-          <Route path="/books/:id" component={EditBook} />
-          <Route exact path="/authors" component={Authors} />
-          <Route exact path="/authors/edit/:id" component={AuthorsEdit} />
-          <Route path="/authors/add" component={AuthorsAdd} />
-          <Route exact path="/publishers" component={Publishers} />
-          <Route path="/publishers/:id" component={PublishersEdit} />
+          <Route exact path="/">
+            <Authors>
+              <TopBar title="Autorzy" pathToAdd="/add" />
+            </Authors>
+          </Route>
+          <Route exact path="/edit/:id" component={AuthorsEdit} />
+          <Route path="/add" component={AuthorsAdd} />
+
           <Route path="*" component={notFound} />
         </Switch>
       </Main>

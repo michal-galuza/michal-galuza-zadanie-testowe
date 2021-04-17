@@ -1,16 +1,43 @@
-import { NavLink } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { NavLink, useHistory, useLocation } from "react-router-dom";
 import styled from "styled-components";
+import { setMessage } from "../../state/message/message";
 
 export default function NavBar() {
+  const history = useHistory();
+  const { pathname } = useLocation();
+  const dispath = useDispatch();
+
   return (
     <Nav>
-      {" "}
+      {pathname === "/" ||
+      pathname === "/publishers" ||
+      pathname === "/books" ? (
+        ""
+      ) : (
+        <BackButton
+          onClick={() => {
+            dispath(setMessage());
+            return history.goBack();
+          }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24px"
+            viewBox="0 0 24 24"
+            width="24px"
+            fill="#000000"
+          >
+            <path d="M0 0h24v24H0V0z" fill="none" opacity=".87" />
+            <path d="M17.51 3.87L15.73 2.1 5.84 12l9.9 9.9 1.77-1.77L9.38 12l8.13-8.13z" />
+          </svg>
+        </BackButton>
+      )}
       <NavItem exact to="/">
-        Start
-      </NavItem>
-      <NavItem to="/books">Ksiązki</NavItem>
-      <NavItem to="/authors">Autorzy</NavItem>
+        Autorzy
+      </NavItem>{" "}
       <NavItem to="/publishers">Wydawnictwa</NavItem>
+      <NavItem to="/books">Ksiązki</NavItem>
     </Nav>
   );
 }
@@ -24,7 +51,7 @@ const Nav = styled.nav`
   justify-content: center;
   align-items: center;
   flex-wrap: nowrap;
-  background-color: white;
+  background-color: ${({ theme }) => theme.defaultBackground};
   box-shadow: 0 0 7px 3px grey;
   padding: 5px;
 `;
@@ -53,7 +80,19 @@ const NavItem = styled(NavLink)`
       height: 3px;
       width: 50px;
       transform: translateX(-50%);
-      background: orange;
+      background: ${({ theme }) => theme.buttonColor};
     }
   }
+`;
+const BackButton = styled.button`
+  position: absolute;
+  top: 0;
+  left: 5px;
+  background-color: white;
+  outline: none;
+  border: 0px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
