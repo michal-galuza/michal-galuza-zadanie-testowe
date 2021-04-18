@@ -8,7 +8,9 @@ import AuthorsAdd from "./views/Authors/AuthorsAdd";
 import Publishers from "./views/PublishingHouse/Publishers";
 import PublishersEdit from "./views/PublishingHouse/PublishersEdit";
 import PublishersAdd from "./views/PublishingHouse/PublishersAdd";
-
+import Books from "./views/Books/Books";
+import BooksAdd from "./views/Books/BooksAdd";
+import BooksEdit from "./views/Books/BooksEdit";
 function App() {
   return (
     <Router>
@@ -21,6 +23,9 @@ function App() {
           <Route exact path="/publishers" component={Publishers} />
           <Route path="/publishers/edit/:id" component={PublishersEdit} />
           <Route path="/publishers/add" component={PublishersAdd} />
+          <Route exact path="/books" component={Books} />
+          <Route path="/books/add" component={BooksAdd} />
+          <Route path="/books/edit/:id" component={BooksEdit} />
           <Route path="*" component={notFound} />
         </Switch>
       </Main>

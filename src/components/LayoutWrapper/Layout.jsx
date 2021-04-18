@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import ButtonsBar from "./ButtonsBar";
 
-export default function TopBar({
+export default function Layout({
   children,
   title,
   message,

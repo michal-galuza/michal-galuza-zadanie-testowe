@@ -11,7 +11,7 @@ import {
   authorsState,
   deleteAuthor,
   loadAuthors,
-  setStatus
+  setStatusAuthors
 } from "../../state/authors/authors";
 
 export default function Authors({ children }) {
@@ -51,7 +51,7 @@ export default function Authors({ children }) {
       "Nie udało się pobrać listy autorów"
     ).then(res => {
       if (res.message) {
-        dispatch(setStatus(loadingStatus.OK));
+        dispatch(setStatusAuthors(loadingStatus.OK));
         return setMessage(res.message);
       }
       dispatch(loadAuthors(res));

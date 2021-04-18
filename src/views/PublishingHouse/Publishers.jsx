@@ -8,7 +8,7 @@ import Layout from "../../components/LayoutWrapper/Layout";
 import { loadingStatus } from "../../consts";
 import {
   publishersState,
-  setStatus,
+  setStatusPublishers,
   loadPublishers,
   deletePublisher
 } from "../../state/publishers/publishers";
@@ -28,7 +28,7 @@ export default function Publishers() {
       "Nie udało się pobrać wydawnictw"
     ).then(res => {
       if (res.message) {
-        dispatch(setStatus(loadingStatus.OK));
+        dispatch(setStatusPublishers(loadingStatus.OK));
         return setMessage(res.message);
       }
       dispatch(loadPublishers(res));

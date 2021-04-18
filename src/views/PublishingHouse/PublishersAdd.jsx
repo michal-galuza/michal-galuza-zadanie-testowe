@@ -1,14 +1,17 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-
+import { useDispatch, useSelector } from "react-redux";
 import apiHelperPublishers from "../../apiHelper/publishersAPI";
 import Form from "../../components/Form/Form";
 import Layout from "../../components/LayoutWrapper/Layout";
-import { addNewPublisher } from "../../state/publishers/publishers";
+import {
+  addNewPublisher,
+  publishersState
+} from "../../state/publishers/publishers";
 
 export default function PublishersAdd() {
   const [message, setMessage] = useState("");
   const dispatch = useDispatch();
+  const { publishers } = useSelector(publishersState);
   function submit({ name, year }, clearForm) {
     if (!name || !year) {
       return setMessage("Wypełnij brakujące dane.");
@@ -21,10 +24,18 @@ export default function PublishersAdd() {
         `Nie można wstawiać wydawnictw z przyszłości, mamy ${actualYear} r.`
       );
     }
+
     if (parsedYear <= 0) {
       return setMessage(`Minimalny rok założenia wydawnictwa to 1 r.`);
     }
-
+    if (
+      publishers.length > 0 &&
+      publishers.findIndex(
+        item => item.name === name && item.establishmentYear === parsedYear
+      ) !== -1
+    ) {
+      return setMessage("Istnieje już takie wydawnictwo");
+    }
     apiHelperPublishers(
       "addPublisher",
       { name, establishmentYear: year },

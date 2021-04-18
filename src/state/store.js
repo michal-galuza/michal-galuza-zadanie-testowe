@@ -15,7 +15,8 @@ import authorsReducer from "./authors/authors";
 import publishers from "./publishers/publishers";
 const reducers = combineReducers({
   publishers: publishers,
-  authors: authorsReducer
+  authors: authorsReducer,
+  books: booksReducer
 });
 const persistConfig = {
   key: "root",

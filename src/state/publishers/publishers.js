@@ -16,9 +16,6 @@ const publishers = createSlice({
       state.publishers = sortFunction([...state.publishers, payload], SORTBY);
       state.status = loadingStatus.OK;
     },
-    sortPublishers: state => {
-      state.publishers = sortFunction(state.publishers, SORTBY);
-    },
     updatePublisher: (state, { payload }) => {
       const indexToUpdate = state.publishers.findIndex(
         item => item.id === payload.id
@@ -40,18 +37,17 @@ const publishers = createSlice({
       ];
       state.publishers = newArr;
     },
-    setStatus: (state, { payload }) => {
+    setStatusPublishers: (state, { payload }) => {
       state.status = payload;
     }
   }
 });
 export const {
   addNewPublisher,
-  sortPublishers,
   updatePublisher,
   loadPublishers,
   deletePublisher,
-  setStatus
+  setStatusPublishers
 } = publishers.actions;
 export const publishersState = state => state[SLICE_NAME];
 export default publishers.reducer;
