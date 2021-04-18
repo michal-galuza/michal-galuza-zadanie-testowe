@@ -36,11 +36,6 @@ const authors = createSlice({
       state.status = loadingStatus.OK;
       let newArr = [
         ...state.authors.filter((item, index) => {
-          console.log("---------------------------");
-          console.log(item, index);
-          console.log(item.id !== payload);
-          console.log(state.authors[index] !== payload);
-          console.log("---------------------------");
           return item.id !== payload;
         })
       ];

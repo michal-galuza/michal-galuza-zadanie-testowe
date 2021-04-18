@@ -65,18 +65,25 @@ const authorsAPI = {
       return { message: "Nie udało się dodać autora" };
     }
   },
-  editAuthor: (payload, id) =>
-    fetch(process.env.REACT_APP_API_URL + "authors/" + id, {
-      method: "PUT",
-      headers: headers,
-      body: JSON.stringify(payload)
-    })
-      .then(res => res.json())
-      .then(result => result)
-      .catch(err => {
-        console.log(err);
-        return false;
-      }),
+  editAuthor: async (payload, id) => {
+    try {
+      const request = await fetch(
+        process.env.REACT_APP_API_URL + "authors/" + id,
+        {
+          method: "PUT",
+          headers: headers,
+          body: JSON.stringify(payload)
+        }
+      );
+      const response = request.json();
+      if (response.message) {
+        return { message: "Nie udało się zaktualizować autora" };
+      }
+      return response;
+    } catch (e) {
+      return { message: "Nie udało się zaktualizować autora" };
+    }
+  },
   getAuthorById: id =>
     fetch(process.env.REACT_APP_API_URL + "authors/" + id, {
       method: "GET",

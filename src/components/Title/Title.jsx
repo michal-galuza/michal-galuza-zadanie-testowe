@@ -16,8 +16,9 @@ const Header = styled.header`
 `;
 const Message = styled.p`
   width: 100%;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   text-align: center;
+  font-style: italic;
 `;
 const H1 = styled.h1`
   width: 100%;

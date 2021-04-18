@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router";
 import styled from "styled-components";
 import authorsAPI from "../../apiHelper/authorsAPI";
 
@@ -14,31 +15,33 @@ import { messageState, setMessage } from "../../state/message/message";
 export default function Authors({ children }) {
   const [open, setOpen] = useState(false);
   const [authorToDelete, setAuthorToDelete] = useState(0);
+  const [deleteStatus, setDeleteStatus] = useState(null);
   const { authors, status } = useSelector(authorsState);
+  const history = useHistory();
   const message = useSelector(messageState);
   const dispatch = useDispatch();
-
+  console.log(authors.length);
   function deleteAuthorById() {
     dispatch(setMessage("Usuwam autora:"));
     authorsAPI.deleteAuthor(authors[authorToDelete].id).then(res => {
+      setDeleteStatus("LOADING");
       if (res.message) {
         return dispatch(setMessage(res.message));
       }
       setAuthorToDelete(null);
-      dispatch(setMessage("Usunięto poprawnie autora: "));
+      dispatch(setMessage("Usunięto poprawnie autora"));
+      setDeleteStatus("DONE");
       return dispatch(deleteAuthor(res.id));
     });
   }
   useEffect(() => {
     if (status === loadingStatus.REFRESH) {
       dispatch(setMessage("Pobieram autorów"));
-      authorsAPI
-        .loadAuthors()
-        .then(res =>
-          res.message
-            ? dispatch(setMessage(res.message))
-            : dispatch(loadAuthors(res))
-        );
+      authorsAPI.loadAuthors().then(res => {
+        res.message
+          ? dispatch(setMessage(res.message))
+          : dispatch(loadAuthors(res));
+      });
     }
   }, [message, dispatch, authors, status]);
   return (
@@ -55,16 +58,28 @@ export default function Authors({ children }) {
         )}
 
         <div>
-          {" "}
-          <button onClick={() => deleteAuthorById()}>Tak</button>{" "}
-          <button
-            onClick={() => {
-              setAuthorToDelete(null);
-              return setOpen(false);
-            }}
-          >
-            Nie
-          </button>
+          {deleteStatus === "DONE" || deleteStatus === "LOADING" ? (
+            <button
+              onClick={() => {
+                setDeleteStatus(null);
+                return setOpen(false);
+              }}
+            >
+              Ok
+            </button>
+          ) : (
+            <>
+              <button onClick={() => deleteAuthorById()}>Tak</button>
+              <button
+                onClick={() => {
+                  setAuthorToDelete(null);
+                  return setOpen(false);
+                }}
+              >
+                Nie
+              </button>
+            </>
+          )}
         </div>
       </Modal>
       {children}
@@ -74,6 +89,7 @@ export default function Authors({ children }) {
           ? "Nie masz dodanych żadnych autorów."
           : message}
       </Message>
+      <p>Łącznie autorów: {authors.length}</p>
       {authors.length === 0
         ? ""
         : authors.map((item, index) => (
@@ -83,7 +99,15 @@ export default function Authors({ children }) {
               </p>
 
               <div>
-                <button>Edytuj</button>
+                <button
+                  onClick={() => {
+                    dispatch(setMessage(""));
+
+                    return history.push("/edit/" + item.id);
+                  }}
+                >
+                  Edytuj
+                </button>
                 <button
                   onClick={() => {
                     dispatch(setMessage(""));
@@ -149,7 +173,8 @@ const Wrapper = styled.div`
   flex-wrap: wrap;
 `;
 const Item = styled.div`
-  width: 250px;
+  width: 300px;
+  text-align: center;
   height: 100px;
   display: flex;
   justify-content: center;

@@ -30,7 +30,8 @@ export default function NavBar() {
           >
             <path d="M0 0h24v24H0V0z" fill="none" opacity=".87" />
             <path d="M17.51 3.87L15.73 2.1 5.84 12l9.9 9.9 1.77-1.77L9.38 12l8.13-8.13z" />
-          </svg>
+          </svg>{" "}
+          Powrót
         </BackButton>
       )}
       <NavItem exact to="/">
@@ -85,9 +86,6 @@ const NavItem = styled(NavLink)`
   }
 `;
 const BackButton = styled.button`
-  position: absolute;
-  top: 0;
-  left: 5px;
   background-color: white;
   outline: none;
   border: 0px;

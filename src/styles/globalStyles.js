@@ -23,6 +23,9 @@ html , body{
 h1 , h2 ,h3 , h4{
     font-weight:400;
 }
+button{
+  cursor: pointer;
+}
 `;
 
 export default GlobalStyle;

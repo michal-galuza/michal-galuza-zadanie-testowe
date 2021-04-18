@@ -4,7 +4,7 @@ import styled from "styled-components";
 export default function notFound() {
   return (
     <Wrapper>
-      <h1>404 | Not found</h1>
+      <h1>404 | NIe znaleziono</h1>
       <Back to="/">Wróć</Back>
     </Wrapper>
   );

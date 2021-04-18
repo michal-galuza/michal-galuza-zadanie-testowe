@@ -21,7 +21,7 @@ export default function TopBar({ title, pathToAdd, refresh }) {
 
       return dispatch(
         setMessage(
-          res.length === 0 ? "Nie masz dodanych żadnych autorów" : "Gotowe"
+          res.length === 0 ? "Nie masz dodanych żadnych autorów" : "Odświeżono"
         )
       );
     });

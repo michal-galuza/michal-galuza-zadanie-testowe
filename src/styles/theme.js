@@ -1,5 +1,5 @@
 const theme = {
   defaultBackground: "#ffffff",
-  buttonColor: "	#FF8000"
+  buttonColor: "	#FF8C00"
 };
 export default theme;
