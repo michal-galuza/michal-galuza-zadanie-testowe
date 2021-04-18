@@ -86,6 +86,25 @@ export default function BooksAdd() {
       return setMessage("Lista wydawnictw zaktualizowana");
     });
   }, [dispatch]);
+  useEffect(() => {
+    if (publishers.status === loadingStatus.INITIAL) {
+      publishersDownload();
+    }
+    if (authors.status === loadingStatus.INITIAL) {
+      authorsDownload();
+    }
+    if (books.status === loadingStatus.INITIAL) {
+      booksDownload();
+    }
+  }, [
+    books,
+    publishers,
+    authors,
+    dispatch,
+    publishersDownload,
+    authorsDownload,
+    booksDownload
+  ]);
   function submitFn(e) {
     console.log(formState);
     e.preventDefault();
@@ -145,25 +164,7 @@ export default function BooksAdd() {
       return dispatch(addNewBook(res));
     });
   }
-  useEffect(() => {
-    if (publishers.status === loadingStatus.INITIAL) {
-      publishersDownload();
-    }
-    if (authors.status === loadingStatus.INITIAL) {
-      authorsDownload();
-    }
-    if (books.status === loadingStatus.INITIAL) {
-      booksDownload();
-    }
-  }, [
-    books,
-    publishers,
-    authors,
-    dispatch,
-    publishersDownload,
-    authorsDownload,
-    booksDownload
-  ]);
+
   if (authors.authors.length === 0) {
     return (
       <Layout title="Dodawanie książek" pathToBack="/books" message={message}>
