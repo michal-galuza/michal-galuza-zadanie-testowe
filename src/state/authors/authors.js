@@ -12,7 +12,7 @@ const authors = createSlice({
   initialState,
   reducers: {
     addNewAuthor: (state, { payload }) => {
-      state.authors = sortFunction([...state.authors, payload], "lastName");
+      state.authors = sortFunction([...state.authors, payload], SORTBY);
       state.status = loadingStatus.OK;
     },
     sortAuthors: state => {
@@ -28,8 +28,7 @@ const authors = createSlice({
       state.status = loadingStatus.OK;
     },
     loadAuthors: (state, { payload }) => {
-      const authors = converToArray(payload);
-      state.authors = sortFunction(authors, SORTBY);
+      state.authors = sortFunction(converToArray(payload), SORTBY);
       state.status = loadingStatus.OK;
     },
     deleteAuthor: (state, { payload }) => {

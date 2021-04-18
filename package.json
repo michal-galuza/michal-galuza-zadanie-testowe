@@ -14,6 +14,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "redux-persist": "^6.0.0",
+    "serve": "^11.3.2",
     "styled-components": "^5.2.3",
     "web-vitals": "^1.0.1"
   },
@@ -23,7 +24,6 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "proxt": "http://139.162.147.107:3513",
   "eslintConfig": {
     "extends": [
       "react-app",

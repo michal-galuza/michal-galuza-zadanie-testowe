@@ -22,7 +22,7 @@ export default function Form({
     return { inputs, initialValue };
   }, [inputs]);
   const [formState, setFormState] = useState(memo.initialValue);
-
+  const [disableButtons, setDisable] = useState(false);
   function change(value, name) {
     setFormState({ ...formState, [name]: value });
   }
@@ -31,7 +31,9 @@ export default function Form({
   }
   function submitForm(e) {
     e.preventDefault();
+    setDisable(true);
     submitFn(formState, clearForm);
+    setDisable(false);
   }
   return (
     <FormStyled onSubmit={e => submitForm(e)}>
@@ -48,7 +50,7 @@ export default function Form({
           />
         </label>
       ))}
-      <button>{buttonText}</button>
+      <button disabled={disableButtons}>{buttonText}</button>
     </FormStyled>
   );
 }

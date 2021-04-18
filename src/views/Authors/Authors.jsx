@@ -1,57 +1,83 @@
+import { useCallback } from "react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import styled from "styled-components";
-import authorsAPI from "../../apiHelper/authorsAPI";
+import apiHelperAuthors from "../../apiHelper/authorsAPI";
+import Layout from "../../components/LayoutWrapper/Layout";
 
 import { loadingStatus } from "../../consts";
 import {
   authorsState,
   deleteAuthor,
-  loadAuthors
+  loadAuthors,
+  setStatus
 } from "../../state/authors/authors";
-import { messageState, setMessage } from "../../state/message/message";
 
 export default function Authors({ children }) {
   const [open, setOpen] = useState(false);
-  const [authorToDelete, setAuthorToDelete] = useState(0);
+  const [authorToDelete, setAuthorToDelete] = useState(null);
   const [deleteStatus, setDeleteStatus] = useState(null);
   const { authors, status } = useSelector(authorsState);
   const history = useHistory();
-  const message = useSelector(messageState);
+
+  const [message, setMessage] = useState("");
   const dispatch = useDispatch();
-  console.log(authors.length);
+
   function deleteAuthorById() {
-    dispatch(setMessage("Usuwam autora:"));
-    authorsAPI.deleteAuthor(authors[authorToDelete].id).then(res => {
+    setMessage("Usuwam autora:");
+    apiHelperAuthors(
+      "deleteAuthor",
+      authorToDelete.id,
+      "Nie udało się usunąć"
+    ).then(res => {
       setDeleteStatus("LOADING");
       if (res.message) {
-        return dispatch(setMessage(res.message));
+        setDeleteStatus("DONE");
+        return setMessage(res.message);
       }
-      setAuthorToDelete(null);
-      dispatch(setMessage("Usunięto poprawnie autora"));
+
+      setMessage("Usunięto poprawnie autora");
       setDeleteStatus("DONE");
       return dispatch(deleteAuthor(res.id));
     });
   }
+
+  const refreshAuthors = useCallback(() => {
+    setMessage("Pobieram autorów");
+    apiHelperAuthors(
+      "loadAuthors",
+      null,
+      "Nie udało się pobrać listy autorów"
+    ).then(res => {
+      if (res.message) {
+        dispatch(setStatus(loadingStatus.OK));
+        return setMessage(res.message);
+      }
+      dispatch(loadAuthors(res));
+      return setMessage("Autorzy zaktualizowani");
+    });
+  }, [dispatch]);
+
   useEffect(() => {
-    if (status === loadingStatus.REFRESH) {
-      dispatch(setMessage("Pobieram autorów"));
-      authorsAPI.loadAuthors().then(res => {
-        res.message
-          ? dispatch(setMessage(res.message))
-          : dispatch(loadAuthors(res));
-      });
+    if (status === loadingStatus.REFRESH || status === loadingStatus.INITIAL) {
+      refreshAuthors();
     }
-  }, [message, dispatch, authors, status]);
+  }, [message, refreshAuthors, authors, status]);
+
   return (
-    <Wrapper>
+    <Layout
+      pathToAdd="/add"
+      title={`Autorzy (${authors.length})`}
+      message={message}
+      refreshFn={refreshAuthors}
+    >
       <Modal isOpen={open}>
         <h2>{message || "Czy jesteś pewien że chcesz usunąć autora:"}</h2>
-        {authors[authorToDelete] ? (
+        {authorToDelete ? (
           <AuthorSelected>
-            {authors[authorToDelete].lastName || "Błąd"}
-            {authors[authorToDelete].firstName || "Błąd"}
+            {authorToDelete.lastName || "Błąd"}{" "}
+            {authorToDelete.firstName || "Błąd"}
           </AuthorSelected>
         ) : (
           ""
@@ -62,6 +88,7 @@ export default function Authors({ children }) {
             <button
               onClick={() => {
                 setDeleteStatus(null);
+                setAuthorToDelete(null);
                 return setOpen(false);
               }}
             >
@@ -82,36 +109,29 @@ export default function Authors({ children }) {
           )}
         </div>
       </Modal>
-      {children}
 
-      <Message>
-        {authors.length === 0 && status !== loadingStatus.LOADING
-          ? "Nie masz dodanych żadnych autorów."
-          : message}
-      </Message>
-      <p>Łącznie autorów: {authors.length}</p>
       {authors.length === 0
-        ? ""
-        : authors.map((item, index) => (
+        ? "Nie masz jeszcze żadnych autorów"
+        : authors.map(({ firstName, lastName, id }, index) => (
             <Item key={"AuthorNr" + index}>
               <p>
-                {item.lastName} {item.firstName}
+                {lastName} {firstName}
               </p>
 
               <div>
                 <button
                   onClick={() => {
-                    dispatch(setMessage(""));
+                    setMessage("");
 
-                    return history.push("/edit/" + item.id);
+                    return history.push("/edit/" + id);
                   }}
                 >
                   Edytuj
                 </button>
                 <button
                   onClick={() => {
-                    dispatch(setMessage(""));
-                    setAuthorToDelete(index);
+                    setMessage("");
+                    setAuthorToDelete({ firstName, lastName, id });
                     return setOpen(true);
                   }}
                 >
@@ -120,14 +140,10 @@ export default function Authors({ children }) {
               </div>
             </Item>
           ))}
-    </Wrapper>
+    </Layout>
   );
 }
-const Message = styled.p`
-  width: 100%;
-  font-size: 1.2rem;
-  text-align: center;
-`;
+
 const Modal = styled.div`
   display: ${({ isOpen }) => (isOpen ? "flex" : "none")};
   justify-content: center;
@@ -163,23 +179,16 @@ const Modal = styled.div`
     border-radius: 8px;
   }
 `;
-const Wrapper = styled.div`
-  width: 100%;
 
-  padding: 100px 10px 10px 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-`;
 const Item = styled.div`
   width: 300px;
   text-align: center;
-  height: 100px;
+  min-height: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  padding: 10px 0;
   box-shadow: 0px 2px 8px 1px grey;
   margin: 10px;
   p {

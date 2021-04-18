@@ -5,55 +5,22 @@ import notFound from "./views/404/404";
 import AuthorsEdit from "./views/Authors/AuthorsEdit";
 import Authors from "./views/Authors/Authors";
 import AuthorsAdd from "./views/Authors/AuthorsAdd";
-import { useDispatch, useSelector } from "react-redux";
-import { authorsState, loadAuthors } from "./state/authors/authors";
-import { useEffect } from "react";
-import { loadingStatus } from "./consts";
-import authorsAPI from "./apiHelper/authorsAPI";
-import { setMessage } from "./state/message/message";
-import TopBar from "./components/TopBar/TopBar";
+import Publishers from "./views/PublishingHouse/Publishers";
+import PublishersEdit from "./views/PublishingHouse/PublishersEdit";
+import PublishersAdd from "./views/PublishingHouse/PublishersAdd";
+
 function App() {
-  const dispatch = useDispatch();
-  const authors = useSelector(authorsState);
-
-  useEffect(() => {
-    if (
-      authors.status === loadingStatus.INITIAL ||
-      authors.status === loadingStatus.REFRESH
-    ) {
-      dispatch(setMessage("Pobieram liste autorów"));
-      console.log(typeof authorsAPI.loadAuthors);
-      authorsAPI
-        .loadAuthors()
-        .then(response => {
-          if (!response) {
-            dispatch(setMessage("Nie udało się pobrać listy autorów "));
-          }
-          if (response.message) {
-            dispatch(setMessage(response.message));
-          }
-
-          dispatch(setMessage(""));
-          return dispatch(loadAuthors(response));
-        })
-        .catch(() =>
-          dispatch(setMessage("Nie udało się pobrać listy autorów "))
-        );
-    }
-  }, [authors, dispatch]);
   return (
     <Router>
       <NavBar />
       <Main>
         <Switch>
-          <Route exact path="/">
-            <Authors>
-              <TopBar title="Autorzy" pathToAdd="/add" />
-            </Authors>
-          </Route>
-          <Route exact path="/edit/:id" component={AuthorsEdit} />
+          <Route exact path="/" component={Authors} />
+          <Route path="/edit/:id" component={AuthorsEdit} />
           <Route path="/add" component={AuthorsAdd} />
-
+          <Route exact path="/publishers" component={Publishers} />
+          <Route path="/publishers/edit/:id" component={PublishersEdit} />
+          <Route path="/publishers/add" component={PublishersAdd} />
           <Route path="*" component={notFound} />
         </Switch>
       </Main>
