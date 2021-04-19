@@ -1,15 +1,10 @@
 import { useHistory } from "react-router";
 import styled from "styled-components";
 
-export default function ListItem({
-  children,
-  deleteFunction,
-  pathToEdit,
-  key
-}) {
+export default function ListItem({ children, deleteFunction, pathToEdit }) {
   const history = useHistory();
   return (
-    <Item key={key}>
+    <Item>
       <ContentWrapper>{children}</ContentWrapper>
       <ButtonsWrapper>
         <button onClick={() => history.push(pathToEdit)}>Edytuj</button>{" "}

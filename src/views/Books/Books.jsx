@@ -88,12 +88,13 @@ export default function Books() {
         <p>Nie masz dodanych żadnych książek</p>
       ) : (
         books.map((item, index) => {
-          const getAuthor = authors[findIndexAuthors(item.id, "authorId")];
+          const getAuthor = authors[findIndexAuthors(item.authorId, "id")];
+
           const getPublisher =
             publishers[findIndexPublishers(item.publisherId, "id")];
           return (
             <ListItem
-              key={"book" + index}
+              key={"bookNr" + index}
               pathToEdit={"/books/edit/" + item.id}
               deleteFunction={() => {
                 setMessage("");
