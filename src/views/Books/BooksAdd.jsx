@@ -46,7 +46,7 @@ export default function BooksAdd() {
 
     if (parsedYear > actualYear) {
       return setMessage(
-        `Nie można wstawiać wydawnictw z przyszłości, mamy ${actualYear} r.`
+        `Nie można wstawiać książęk z przyszłości, mamy ${actualYear} r.`
       );
     }
     if (parsedYear <= 0) {

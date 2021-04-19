@@ -88,8 +88,9 @@ export default function Books() {
         <p>Nie masz dodanych żadnych książek</p>
       ) : (
         books.map((item, index) => {
-          const getAuthor = findIndexAuthors(item.id, "authorId");
-          const getPublisher = findIndexPublishers(item.publisherId, "id");
+          const getAuthor = authors[findIndexAuthors(item.id, "authorId")];
+          const getPublisher =
+            publishers[findIndexPublishers(item.publisherId, "id")];
           return (
             <ListItem
               key={"book" + index}
