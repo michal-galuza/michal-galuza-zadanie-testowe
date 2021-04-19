@@ -1,24 +1,17 @@
-import { useCallback } from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import styled from "styled-components";
 import apiHelperAuthors from "../../apiHelper/authorsAPI";
 import Layout from "../../components/LayoutWrapper/Layout";
 
-import { loadingStatus } from "../../consts";
-import {
-  authorsState,
-  deleteAuthor,
-  loadAuthors,
-  setStatusAuthors
-} from "../../state/authors/authors";
+import { authorsState, deleteAuthor } from "../../state/authors/authors";
 
 export default function Authors({ children }) {
   const [open, setOpen] = useState(false);
   const [authorToDelete, setAuthorToDelete] = useState(null);
   const [deleteStatus, setDeleteStatus] = useState(null);
-  const { authors, status } = useSelector(authorsState);
+  const { authors } = useSelector(authorsState);
   const history = useHistory();
 
   const [message, setMessage] = useState("");
@@ -43,72 +36,54 @@ export default function Authors({ children }) {
     });
   }
 
-  const refreshAuthors = useCallback(() => {
-    setMessage("Pobieram autorów");
-    apiHelperAuthors(
-      "loadAuthors",
-      null,
-      "Nie udało się pobrać listy autorów"
-    ).then(res => {
-      if (res.message) {
-        dispatch(setStatusAuthors(loadingStatus.OK));
-        return setMessage(res.message);
-      }
-      dispatch(loadAuthors(res));
-      return setMessage("Autorzy zaktualizowani");
-    });
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (status === loadingStatus.REFRESH || status === loadingStatus.INITIAL) {
-      refreshAuthors();
-    }
-  }, [message, refreshAuthors, authors, status]);
-
   return (
     <Layout
       pathToAdd="/add"
       title={`Autorzy (${authors.length})`}
       message={message}
-      refreshFn={refreshAuthors}
+      setMessage={setMessage}
     >
-      <Modal isOpen={open}>
-        <h2>{message || "Czy jesteś pewien że chcesz usunąć autora:"}</h2>
-        {authorToDelete ? (
-          <AuthorSelected>
-            {authorToDelete.lastName || "Błąd"}{" "}
-            {authorToDelete.firstName || "Błąd"}
-          </AuthorSelected>
-        ) : (
-          ""
-        )}
-
-        <div>
-          {deleteStatus === "DONE" || deleteStatus === "LOADING" ? (
-            <button
-              onClick={() => {
-                setDeleteStatus(null);
-                setAuthorToDelete(null);
-                return setOpen(false);
-              }}
-            >
-              Ok
-            </button>
+      {open ? (
+        <Modal isOpen={open}>
+          <h2>{message || "Czy jesteś pewien że chcesz usunąć autora:"}</h2>
+          {authorToDelete ? (
+            <AuthorSelected>
+              {authorToDelete.lastName || "Błąd"}{" "}
+              {authorToDelete.firstName || "Błąd"}
+            </AuthorSelected>
           ) : (
-            <>
-              <button onClick={() => deleteAuthorById()}>Tak</button>
+            ""
+          )}
+
+          <div>
+            {deleteStatus === "DONE" || deleteStatus === "LOADING" ? (
               <button
                 onClick={() => {
+                  setDeleteStatus(null);
                   setAuthorToDelete(null);
                   return setOpen(false);
                 }}
               >
-                Nie
+                Ok
               </button>
-            </>
-          )}
-        </div>
-      </Modal>
+            ) : (
+              <>
+                <button onClick={() => deleteAuthorById()}>Tak</button>
+                <button
+                  onClick={() => {
+                    setAuthorToDelete(null);
+                    return setOpen(false);
+                  }}
+                >
+                  Nie
+                </button>
+              </>
+            )}
+          </div>
+        </Modal>
+      ) : (
+        ""
+      )}
 
       {authors.length === 0
         ? "Nie masz jeszcze żadnych autorów"

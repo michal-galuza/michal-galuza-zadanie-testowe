@@ -1,40 +1,23 @@
-import { useEffect } from "react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import styled from "styled-components";
 import apiHelperPublishers from "../../apiHelper/publishersAPI";
 import Layout from "../../components/LayoutWrapper/Layout";
-import { loadingStatus } from "../../consts";
+
 import {
   publishersState,
-  setStatusPublishers,
-  loadPublishers,
   deletePublisher
 } from "../../state/publishers/publishers";
 export default function Publishers() {
   const dispatch = useDispatch();
   const history = useHistory();
-  const { publishers, status } = useSelector(publishersState);
+  const { publishers } = useSelector(publishersState);
   const [message, setMessage] = useState("");
   const [selectedPublisher, setSelectedPublisher] = useState(null);
   const [open, setOpen] = useState(false);
   const [deleteStatus, setDeleteStatus] = useState(null);
-  const refreshPublishers = useCallback(() => {
-    setMessage("Pobieram wydawnictwa");
-    apiHelperPublishers(
-      "loadPublishers",
-      null,
-      "Nie udało się pobrać wydawnictw"
-    ).then(res => {
-      if (res.message) {
-        dispatch(setStatusPublishers(loadingStatus.OK));
-        return setMessage(res.message);
-      }
-      dispatch(loadPublishers(res));
-      return setMessage("Wydawnictwa zaktualizowane");
-    });
-  }, [dispatch]);
+
   function deletePublisherById() {
     setMessage("Usuwam wydawnictwo");
     setDeleteStatus("LOADING");
@@ -52,17 +35,13 @@ export default function Publishers() {
       return setMessage("Usunięto");
     });
   }
-  useEffect(() => {
-    if (status === loadingStatus.REFRESH || status === loadingStatus.INITIAL) {
-      refreshPublishers();
-    }
-  }, [message, refreshPublishers, publishers, status]);
+
   return (
     <Layout
       title={`Wydawnictwa (${publishers.length})`}
       message={message}
       pathToAdd="/publishers/add"
-      refreshFn={refreshPublishers}
+      setMessage={setMessage}
     >
       <Modal isOpen={open}>
         <h2>{message || "Czy jesteś pewien że chcesz usunąć:"}</h2>

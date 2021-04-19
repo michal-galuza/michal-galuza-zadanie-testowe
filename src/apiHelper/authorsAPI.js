@@ -28,6 +28,12 @@ const apiHelperAuthors = async (req, payload, message) => {
     const makeRequest = await authorsAPI[req](payload);
     const getResponse = await makeRequest.json();
     if (getResponse.message) {
+      if (getResponse.message === "The author has at least one book") {
+        return {
+          message:
+            "Nie można usunąć autora ponieważ są do niego przypisane książki."
+        };
+      }
       return { message };
     }
     return getResponse;

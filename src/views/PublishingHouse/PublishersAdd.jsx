@@ -54,6 +54,7 @@ export default function PublishersAdd() {
       title="Dodawanie wydawnictwa"
       pathToBack="/publishers"
       message={message}
+      setMessage={setMessage}
     >
       <Form
         submitFn={submit}

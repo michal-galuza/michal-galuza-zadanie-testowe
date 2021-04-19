@@ -23,7 +23,7 @@ const Nav = styled.nav`
   align-items: center;
   flex-wrap: nowrap;
   background-color: ${({ theme }) => theme.defaultBackground};
-  box-shadow: 0 0 7px 3px grey;
+
   padding: 5px;
 `;
 const NavItem = styled(NavLink)`

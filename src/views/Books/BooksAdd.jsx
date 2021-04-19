@@ -1,28 +1,15 @@
 import { useReducer } from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import apiHelperAuthors from "../../apiHelper/authorsAPI";
+
 import apiHelperBooks from "../../apiHelper/booksAPI";
-import apiHelperPublishers from "../../apiHelper/publishersAPI";
+
 import Layout from "../../components/LayoutWrapper/Layout";
-import { loadingStatus } from "../../consts";
-import {
-  authorsState,
-  loadAuthors,
-  setStatusAuthors
-} from "../../state/authors/authors";
-import {
-  addNewBook,
-  booksState,
-  loadBooks,
-  setStatusBooks
-} from "../../state/books/books";
-import {
-  loadPublishers,
-  publishersState,
-  setStatusPublishers
-} from "../../state/publishers/publishers";
+
+import { authorsState } from "../../state/authors/authors";
+import { addNewBook, booksState } from "../../state/books/books";
+import { publishersState } from "../../state/publishers/publishers";
 
 export default function BooksAdd() {
   const dispatch = useDispatch();
@@ -41,72 +28,8 @@ export default function BooksAdd() {
     return { ...state, [name]: value };
   }
   const [formState, formDispatch] = useReducer(formReducer, initalFormState);
-  const booksDownload = useCallback(() => {
-    setMessage("Pobieram listę książek");
-    apiHelperBooks(
-      "loadBooks",
-      null,
-      "Nie udało się pobrać listy książek"
-    ).then(res => {
-      if (res.message) {
-        dispatch(setStatusBooks(loadingStatus.OK));
-        return setMessage("Nie udało się pobrać listy książek");
-      }
-      dispatch(loadBooks(res));
-      return setMessage("Lista książek pobrana");
-    });
-  }, [dispatch]);
-  const authorsDownload = useCallback(() => {
-    setMessage("Pobieram listę autorów");
-    apiHelperAuthors(
-      "loadAuthors",
-      null,
-      "Nie udało się pobrać listy autorów"
-    ).then(res => {
-      if (res.message) {
-        dispatch(setStatusAuthors(loadingStatus.OK));
-        return setMessage(res.message);
-      }
-      dispatch(loadAuthors(res));
-      return setMessage("Autorzy zaktualizowani");
-    });
-  }, [dispatch]);
-  const publishersDownload = useCallback(() => {
-    setMessage("Pobieram listę wydawnictw");
-    apiHelperPublishers(
-      "loadPublishers",
-      null,
-      "Nie udało się pobrać listy wydawnictw"
-    ).then(res => {
-      if (res.message) {
-        dispatch(setStatusPublishers(loadingStatus.OK));
-        return setMessage(res.message);
-      }
-      dispatch(loadPublishers(res));
-      return setMessage("Lista wydawnictw zaktualizowana");
-    });
-  }, [dispatch]);
-  useEffect(() => {
-    if (publishers.status === loadingStatus.INITIAL) {
-      publishersDownload();
-    }
-    if (authors.status === loadingStatus.INITIAL) {
-      authorsDownload();
-    }
-    if (books.status === loadingStatus.INITIAL) {
-      booksDownload();
-    }
-  }, [
-    books,
-    publishers,
-    authors,
-    dispatch,
-    publishersDownload,
-    authorsDownload,
-    booksDownload
-  ]);
+
   function submitFn(e) {
-    console.log(formState);
     e.preventDefault();
     const { title, isbn, author, publisher, publishmentYear } = formState;
     if (!title || !isbn || !publishmentYear) {
@@ -185,7 +108,12 @@ export default function BooksAdd() {
     );
   }
   return (
-    <Layout title="Dodawanie książek" pathToBack="/books" message={message}>
+    <Layout
+      title="Dodawanie książek"
+      pathToBack="/books"
+      message={message}
+      setMessage={setMessage}
+    >
       <Form onSubmit={e => submitFn(e)}>
         <label>
           Tytuł
@@ -267,6 +195,7 @@ const Info = styled.p`
   color: white;
 `;
 const Form = styled.form`
+  margin-top: 5px;
   width: 100%;
   display: flex;
   justify-content: space-between;

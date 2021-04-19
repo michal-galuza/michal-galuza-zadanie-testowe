@@ -69,7 +69,12 @@ export default function PublisherEdit() {
   }
 
   return (
-    <Layout title="Edytuj" message={message} pathToBack="/publishers">
+    <Layout
+      title="Edytuj"
+      message={message}
+      pathToBack="/publishers"
+      setMessage={setMessage}
+    >
       <Info>
         {indexToEdit === -1 ||
         !publisher.year ||

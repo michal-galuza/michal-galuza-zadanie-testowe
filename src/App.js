@@ -11,6 +11,7 @@ import PublishersAdd from "./views/PublishingHouse/PublishersAdd";
 import Books from "./views/Books/Books";
 import BooksAdd from "./views/Books/BooksAdd";
 import BooksEdit from "./views/Books/BooksEdit";
+
 function App() {
   return (
     <Router>
@@ -35,6 +36,6 @@ function App() {
 const Main = styled.main`
   width: 100%;
   min-height: 100vh;
-  padding-top: 50px;
+  padding-top: 5px;
 `;
 export default App;

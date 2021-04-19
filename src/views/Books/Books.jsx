@@ -1,97 +1,81 @@
 import { useDispatch, useSelector } from "react-redux";
-import {
-  authorsState,
-  loadAuthors,
-  setStatusAuthors
-} from "../../state/authors/authors";
-import {
-  loadPublishers,
-  publishersState,
-  setStatusPublishers
-} from "../../state/publishers/publishers";
+import { authorsState } from "../../state/authors/authors";
+import { publishersState } from "../../state/publishers/publishers";
 import Layout from "../../components/LayoutWrapper/Layout";
-import { useEffect } from "react";
-import { loadingStatus } from "../../consts";
-import apiHelperPublishers from "../../apiHelper/publishersAPI";
 import { useCallback } from "react";
-import apiHelperAuthors from "../../apiHelper/authorsAPI";
-import { booksState, loadBooks, setStatusBooks } from "../../state/books/books";
+import { booksState, deleteBook } from "../../state/books/books";
 import apiHelperBooks from "../../apiHelper/booksAPI";
 import { useState } from "react";
 import styled from "styled-components";
+import { useHistory } from "react-router";
 export default function Books() {
   const [message, setMessage] = useState("");
   const authors = useSelector(authorsState);
   const publishers = useSelector(publishersState);
   const books = useSelector(booksState);
   const dispatch = useDispatch();
+  const history = useHistory();
+  const [bookToDelete, setBookToDelete] = useState(false);
+  const [deleteStatus, setDeleteStatus] = useState(null);
 
-  const booksDownload = useCallback(() => {
-    setMessage("Pobieram listę książek");
-    apiHelperBooks(
-      "loadBooks",
-      null,
-      "Nie udało się pobrać listy książek"
-    ).then(res => {
-      if (res.message) {
-        dispatch(setStatusBooks(loadingStatus.OK));
-        return setMessage("Nie udało się pobrać listy książek");
-      }
-      dispatch(loadBooks(res));
-      return setMessage("Lista książek pobrana");
-    });
-  }, [dispatch]);
-  const authorsDownload = useCallback(() => {
-    setMessage("Pobieram listę autorów");
-    apiHelperAuthors(
-      "loadAuthors",
-      null,
-      "Nie udało się pobrać listy autorów"
-    ).then(res => {
-      if (res.message) {
-        dispatch(setStatusAuthors(loadingStatus.OK));
-        return setMessage(res.message);
-      }
-      dispatch(loadAuthors(res));
-      return setMessage("Autorzy zaktualizowani");
-    });
-  }, [dispatch]);
-  const publishersDownload = useCallback(() => {
-    setMessage("Pobieram listę wydawnictw");
-    apiHelperPublishers(
-      "loadPublishers",
-      null,
-      "Nie udało się pobrać listy wydawnictw"
-    ).then(res => {
-      if (res.message) {
-        dispatch(setStatusPublishers(loadingStatus.OK));
-        return setMessage(res.message);
-      }
-      dispatch(loadPublishers(res));
-      return setMessage("Lista wydawnictw zaktualizowana");
-    });
-  }, [dispatch]);
-  useEffect(() => {
-    if (publishers.status === loadingStatus.INITIAL) {
-      publishersDownload();
-    }
-    if (authors.status === loadingStatus.INITIAL) {
-      authorsDownload();
-    }
-    if (books.status === loadingStatus.INITIAL) {
-      booksDownload();
-    }
-  }, [
-    books,
-    publishers,
-    authors,
-    dispatch,
-    publishersDownload,
-    authorsDownload,
-    booksDownload
-  ]);
+  const deleteBookById = useCallback(
+    id => {
+      setMessage("Usuwam książkę");
+      setDeleteStatus("LOADING");
+      apiHelperBooks("deleteBook", id, "Nie udało się usunąć książki").then(
+        res => {
+          if (res.message) {
+            setDeleteStatus("DONE");
+            return setMessage(res.message);
+          }
+          setDeleteStatus("DONE");
+          setMessage("Usunięto książkę");
+          return dispatch(deleteBook(res.id));
+        }
+      );
+    },
+    [dispatch]
+  );
+
   return (
-    <Layout title="Książki" pathToAdd="/books/add">
+    <Layout
+      title={`Książki (${books.books.length})`}
+      pathToAdd="/books/add"
+      message={message}
+      setMessage={setMessage}
+    >
+      <Modal isOpen={bookToDelete}>
+        {message || "Czy jesteś pewny że chcesz usunąć"}
+        {bookToDelete ? (
+          <Book>
+            <p>{bookToDelete.title}</p>
+            <p>{bookToDelete.author}</p>
+            <p>{bookToDelete.isbn}</p>
+            <p> {bookToDelete.publisher}</p>
+          </Book>
+        ) : (
+          ""
+        )}{" "}
+        <div>
+          {deleteStatus === "DONE" || deleteStatus === "LOADING" ? (
+            <button
+              onClick={() => {
+                setDeleteStatus(null);
+                return setBookToDelete(null);
+              }}
+            >
+              Ok
+            </button>
+          ) : (
+            <>
+              <button onClick={() => deleteBookById(bookToDelete.id)}>
+                Tak
+              </button>
+              <button onClick={() => setBookToDelete(null)}>Nie</button>
+            </>
+          )}
+        </div>
+      </Modal>
       {books.books.lenght === 0 ? (
         <p>Nie masz dodanych żadnych książek</p>
       ) : (
@@ -122,16 +106,17 @@ export default function Books() {
                   : `Wydawnictwo: ${getPublisher.name} (${getPublisher.establishmentYear} r.)`}
               </p>
               <div>
-                <button
-                  onClick={() => {
-                    setMessage("");
-                  }}
-                >
+                <button onClick={() => history.push("/books/edit/" + item.id)}>
                   Edytuj
                 </button>
                 <button
                   onClick={() => {
                     setMessage("");
+                    setBookToDelete({
+                      ...item,
+                      author: getAuthor?.firstName + " " + getAuthor?.lastName,
+                      publisher: getPublisher?.name
+                    });
                   }}
                 >
                   Usuń
@@ -178,4 +163,44 @@ const Item = styled.div`
       background-color: ${({ theme }) => theme.buttonColor};
     }
   }
+`;
+const Modal = styled.div`
+  display: ${({ isOpen }) => (isOpen ? "flex" : "none")};
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffa600;
+  color: white;
+  width: 300px;
+  min-height: 300px;
+  text-align: center;
+  border-radius: 15px;
+  box-shadow: 0 0 5px 1px grey;
+
+  button {
+    width: 100px;
+    height: 30px;
+    font-size: 1.3rem;
+    background-color: ${({ theme }) => theme.defaultBackground};
+    color: black;
+    border: 0px;
+    margin: 0 6px;
+    border-radius: 8px;
+  }
+`;
+const Book = styled.div`
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px 0;
+  background-color: ${({ theme }) => theme.defaultBackground};
+  color: black;
+  font-size: 1.6rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 `;
