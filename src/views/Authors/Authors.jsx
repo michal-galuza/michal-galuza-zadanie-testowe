@@ -167,7 +167,7 @@ const Item = styled.div`
   box-shadow: 0px 2px 8px 1px grey;
   margin: 10px;
   p {
-    font-size: 1.7rem;
+    font-size: 1.1rem;
   }
   div {
     width: 100%;

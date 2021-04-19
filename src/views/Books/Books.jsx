@@ -198,14 +198,11 @@ const Book = styled.div`
   padding: 10px 0;
   background-color: ${({ theme }) => theme.defaultBackground};
   color: black;
-  font-size: 1.1rem;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   p {
-    padding: 0 5px;
-    width: 100%;
-    text-align: left;
+    font-size: 1.6rem;
   }
 `;

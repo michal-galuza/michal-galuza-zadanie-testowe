@@ -164,7 +164,7 @@ const Title = styled.h1`
 `;
 const Message = styled.p`
   width: 100%;
-  padding: 2px 0;
+  padding: 2px 7px;
 
   font-size: 1.1rem;
   grid-column: 1/4;

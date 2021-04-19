@@ -27,7 +27,7 @@ export default function Publishers() {
       books.findIndex(item => item.publisherId === selectedPublisher.id) !== -1
     ) {
       return setMessage(
-        "Do tego wydawnictwa są przypisane książki usuń jest najpierw"
+        "Do tego wydawnictwa są przypisane książki usuń je najpierw"
       );
     }
     apiHelperPublishers(
@@ -136,7 +136,7 @@ const Item = styled.div`
   box-shadow: 0px 2px 8px 1px grey;
   margin: 10px;
   p {
-    font-size: 1.7rem;
+    font-size: 1.1rem;
   }
   div {
     width: 100%;
@@ -198,13 +198,4 @@ const SelectedPublisher = styled.p`
   background-color: ${({ theme }) => theme.defaultBackground};
   color: black;
   font-size: 1.1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  p {
-    padding: 0 5px;
-    width: 100%;
-    text-align: left;
-  }
 `;
