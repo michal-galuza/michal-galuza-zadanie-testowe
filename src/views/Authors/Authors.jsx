@@ -1,18 +1,18 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router";
+
 import styled from "styled-components";
 import apiHelperAuthors from "../../apiHelper/authorsAPI";
 import Layout from "../../components/LayoutWrapper/Layout";
+import ListItem from "../../components/ListItem/ListItem";
 
 import { authorsState, deleteAuthor } from "../../state/authors/authors";
 
-export default function Authors({ children }) {
+export default function Authors() {
   const [open, setOpen] = useState(false);
   const [authorToDelete, setAuthorToDelete] = useState(null);
   const [deleteStatus, setDeleteStatus] = useState(null);
   const { authors } = useSelector(authorsState);
-  const history = useHistory();
 
   const [message, setMessage] = useState("");
   const dispatch = useDispatch();
@@ -88,32 +88,18 @@ export default function Authors({ children }) {
       {authors.length === 0
         ? "Nie masz jeszcze żadnych autorów"
         : authors.map(({ firstName, lastName, id }, index) => (
-            <Item key={"AuthorNr" + index}>
-              <p>
-                {lastName} {firstName}
-              </p>
-
-              <div>
-                <button
-                  onClick={() => {
-                    setMessage("");
-
-                    return history.push("/edit/" + id);
-                  }}
-                >
-                  Edytuj
-                </button>
-                <button
-                  onClick={() => {
-                    setMessage("");
-                    setAuthorToDelete({ firstName, lastName, id });
-                    return setOpen(true);
-                  }}
-                >
-                  Usuń
-                </button>
-              </div>
-            </Item>
+            <ListItem
+              key={"AuthorNr" + index}
+              deleteFunction={() => {
+                setMessage("");
+                setAuthorToDelete({ firstName, lastName, id });
+                return setOpen(true);
+              }}
+              pathToEdit={"/edit/" + id}
+            >
+              <p>Nazwisko: {lastName}</p>
+              <p>Imię: {firstName}</p>
+            </ListItem>
           ))}
     </Layout>
   );
@@ -155,37 +141,6 @@ const Modal = styled.div`
   }
 `;
 
-const Item = styled.div`
-  width: 300px;
-  text-align: center;
-  min-height: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 10px 0;
-  box-shadow: 0px 2px 8px 1px grey;
-  margin: 10px;
-  p {
-    font-size: 1.1rem;
-  }
-  div {
-    width: 100%;
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 5px;
-    button {
-      width: 100px;
-      height: 25px;
-      margin: 0 10px;
-      border: 0px;
-      color: white;
-      background-color: ${({ theme }) => theme.buttonColor};
-    }
-  }
-`;
 const AuthorSelected = styled.p`
   width: 100%;
   margin: 10px 0;

@@ -40,7 +40,7 @@ export default function AuthorsAdd() {
     });
   }
   return (
-    <Layout title="Dodawanie autorów" pathToBack="/" message={message}>
+    <Layout title="Dodaj autora" pathToBack="/" message={message}>
       <Form submitFn={submit} />
     </Layout>
   );

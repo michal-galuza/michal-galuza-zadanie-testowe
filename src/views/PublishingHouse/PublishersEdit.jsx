@@ -70,7 +70,7 @@ export default function PublisherEdit() {
 
   return (
     <Layout
-      title="Edytuj"
+      title="Edytuj wydawnictwo"
       message={message}
       pathToBack="/publishers"
       setMessage={setMessage}

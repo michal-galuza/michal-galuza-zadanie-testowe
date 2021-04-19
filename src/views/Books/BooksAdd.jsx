@@ -109,7 +109,7 @@ export default function BooksAdd() {
   }
   return (
     <Layout
-      title="Dodawanie książek"
+      title="Dodaj książkę"
       pathToBack="/books"
       message={message}
       setMessage={setMessage}

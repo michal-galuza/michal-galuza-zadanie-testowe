@@ -59,7 +59,7 @@ export default function AuthorsEdit() {
   }
 
   return (
-    <Layout title="Edytuj" message={message} pathToBack="/">
+    <Layout title="Edytuj autora" message={message} pathToBack="/">
       <Info>
         {indexToEdit === -1 ||
         !author.firstName ||

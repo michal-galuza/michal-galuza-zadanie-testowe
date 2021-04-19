@@ -51,7 +51,7 @@ export default function PublishersAdd() {
   }
   return (
     <Layout
-      title="Dodawanie wydawnictwa"
+      title="Dodaj wydawnictwo"
       pathToBack="/publishers"
       message={message}
       setMessage={setMessage}

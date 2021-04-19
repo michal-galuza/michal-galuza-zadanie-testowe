@@ -55,8 +55,10 @@ export default function Form({
   );
 }
 const FormStyled = styled.form`
-  margin-top: 30px;
+  min-width: 300px;
   width: 100%;
+  max-width: 350px;
+  padding: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;

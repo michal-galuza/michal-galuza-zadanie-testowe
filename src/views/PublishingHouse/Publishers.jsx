@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router";
 import styled from "styled-components";
 import apiHelperPublishers from "../../apiHelper/publishersAPI";
 import Layout from "../../components/LayoutWrapper/Layout";
+import ListItem from "../../components/ListItem/ListItem";
 import { booksState } from "../../state/books/books";
 
 import {
@@ -12,7 +12,6 @@ import {
 } from "../../state/publishers/publishers";
 export default function Publishers() {
   const dispatch = useDispatch();
-  const history = useHistory();
   const { publishers } = useSelector(publishersState);
   const { books } = useSelector(booksState);
   const [message, setMessage] = useState("");
@@ -93,68 +92,26 @@ export default function Publishers() {
       {publishers.length === 0
         ? "Nie masz jeszcze żadnych wydawnictw"
         : publishers.map(({ name, establishmentYear, id }, index) => (
-            <Item key={"PublisherNr" + index}>
+            <ListItem
+              key={"PublisherNr" + index}
+              pathToEdit={"/publishers/edit/" + id}
+              deleteFunction={() => {
+                setMessage("");
+                setSelectedPublisher({
+                  id,
+                  name,
+                  establishmentYear
+                });
+                return setOpen(true);
+              }}
+            >
               <p>{name}</p>
               <p>Założono w: {establishmentYear} r.</p>
-              <div>
-                <button
-                  onClick={() => {
-                    setMessage("");
-                    return history.push("/publishers/edit/" + id);
-                  }}
-                >
-                  Edytuj
-                </button>
-                <button
-                  onClick={() => {
-                    setMessage("");
-                    setSelectedPublisher({
-                      id,
-                      name,
-                      establishmentYear
-                    });
-                    return setOpen(true);
-                  }}
-                >
-                  Usuń
-                </button>
-              </div>
-            </Item>
+            </ListItem>
           ))}
     </Layout>
   );
 }
-const Item = styled.div`
-  width: 300px;
-  text-align: center;
-  min-height: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 10px 0;
-  box-shadow: 0px 2px 8px 1px grey;
-  margin: 10px;
-  p {
-    font-size: 1.1rem;
-  }
-  div {
-    width: 100%;
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 5px;
-    button {
-      width: 100px;
-      height: 25px;
-      margin: 0 10px;
-      border: 0px;
-      color: white;
-      background-color: ${({ theme }) => theme.buttonColor};
-    }
-  }
-`;
 
 const Modal = styled.div`
   display: ${({ isOpen }) => (isOpen ? "flex" : "none")};

@@ -7,17 +7,25 @@ import { booksState, deleteBook } from "../../state/books/books";
 import apiHelperBooks from "../../apiHelper/booksAPI";
 import { useState } from "react";
 import styled from "styled-components";
-import { useHistory } from "react-router";
+
+import ListItem from "../../components/ListItem/ListItem";
 export default function Books() {
   const [message, setMessage] = useState("");
-  const authors = useSelector(authorsState);
-  const publishers = useSelector(publishersState);
-  const books = useSelector(booksState);
+  const { authors } = useSelector(authorsState);
+  const { publishers } = useSelector(publishersState);
+  const { books } = useSelector(booksState);
   const dispatch = useDispatch();
-  const history = useHistory();
+
   const [bookToDelete, setBookToDelete] = useState(false);
   const [deleteStatus, setDeleteStatus] = useState(null);
-
+  const findIndexAuthors = useCallback(
+    (value, key) => authors.findIndex(item => item[key] === value),
+    [authors]
+  );
+  const findIndexPublishers = useCallback(
+    (value, key) => publishers.findIndex(item => item[key] === value),
+    [publishers]
+  );
   const deleteBookById = useCallback(
     id => {
       setMessage("Usuwam książkę");
@@ -39,7 +47,7 @@ export default function Books() {
 
   return (
     <Layout
-      title={`Książki (${books.books.length})`}
+      title={`Książki (${books.length})`}
       pathToAdd="/books/add"
       message={message}
       setMessage={setMessage}
@@ -76,22 +84,25 @@ export default function Books() {
           )}
         </div>
       </Modal>
-      {books.books.lenght === 0 ? (
+      {books.lenght === 0 ? (
         <p>Nie masz dodanych żadnych książek</p>
       ) : (
-        books.books.map((item, index) => {
-          const getAuthor =
-            authors.authors[
-              authors.authors.findIndex(({ id }) => id === item.authorId)
-            ];
-          const getPublisher =
-            publishers.publishers[
-              publishers.publishers.findIndex(
-                ({ id }) => id === item.publisherId
-              )
-            ];
+        books.map((item, index) => {
+          const getAuthor = findIndexAuthors(item.id, "authorId");
+          const getPublisher = findIndexPublishers(item.publisherId, "id");
           return (
-            <Item key={"book" + index}>
+            <ListItem
+              key={"book" + index}
+              pathToEdit={"/books/edit/" + item.id}
+              deleteFunction={() => {
+                setMessage("");
+                setBookToDelete({
+                  ...item,
+                  author: getAuthor?.firstName + " " + getAuthor?.lastName,
+                  publisher: getPublisher?.name
+                });
+              }}
+            >
               <p>ISBN: {item.isbn}</p>
               <p>Tytuł: {item.title}</p>
               <p>Rok wydania: {item.publishmentYear}</p>
@@ -105,24 +116,7 @@ export default function Books() {
                   ? "Nie znaleziono wydawnictwa w bazie"
                   : `Wydawnictwo: ${getPublisher.name} (${getPublisher.establishmentYear} r.)`}
               </p>
-              <div>
-                <button onClick={() => history.push("/books/edit/" + item.id)}>
-                  Edytuj
-                </button>
-                <button
-                  onClick={() => {
-                    setMessage("");
-                    setBookToDelete({
-                      ...item,
-                      author: getAuthor?.firstName + " " + getAuthor?.lastName,
-                      publisher: getPublisher?.name
-                    });
-                  }}
-                >
-                  Usuń
-                </button>
-              </div>
-            </Item>
+            </ListItem>
           );
         })
       )}
@@ -130,40 +124,6 @@ export default function Books() {
   );
 }
 
-const Item = styled.div`
-  width: 300px;
-  width: 100%;
-  max-width: 500px;
-
-  text-align: center;
-  min-height: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 10px 0;
-  box-shadow: 0px 2px 8px 1px grey;
-  margin: 10px;
-  p {
-    font-size: 1.1rem;
-  }
-  div {
-    width: 100%;
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 5px;
-    button {
-      width: 100px;
-      height: 25px;
-      margin: 0 10px;
-      border: 0px;
-      color: white;
-      background-color: ${({ theme }) => theme.buttonColor};
-    }
-  }
-`;
 const Modal = styled.div`
   display: ${({ isOpen }) => (isOpen ? "flex" : "none")};
   justify-content: center;
@@ -203,6 +163,6 @@ const Book = styled.div`
   align-items: center;
   flex-direction: column;
   p {
-    font-size: 1.6rem;
+    font-size: 1.1rem;
   }
 `;
