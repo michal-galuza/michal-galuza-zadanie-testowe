@@ -4,6 +4,7 @@ import { useHistory } from "react-router";
 import styled from "styled-components";
 import apiHelperPublishers from "../../apiHelper/publishersAPI";
 import Layout from "../../components/LayoutWrapper/Layout";
+import { booksState } from "../../state/books/books";
 
 import {
   publishersState,
@@ -13,6 +14,7 @@ export default function Publishers() {
   const dispatch = useDispatch();
   const history = useHistory();
   const { publishers } = useSelector(publishersState);
+  const { books } = useSelector(booksState);
   const [message, setMessage] = useState("");
   const [selectedPublisher, setSelectedPublisher] = useState(null);
   const [open, setOpen] = useState(false);
@@ -21,6 +23,13 @@ export default function Publishers() {
   function deletePublisherById() {
     setMessage("Usuwam wydawnictwo");
     setDeleteStatus("LOADING");
+    if (
+      books.findIndex(item => item.publisherId === selectedPublisher.id) !== -1
+    ) {
+      return setMessage(
+        "Do tego wydawnictwa są przypisane książki usuń jest najpierw"
+      );
+    }
     apiHelperPublishers(
       "deletePublisher",
       selectedPublisher.id,
@@ -188,5 +197,14 @@ const SelectedPublisher = styled.p`
   padding: 10px 0;
   background-color: ${({ theme }) => theme.defaultBackground};
   color: black;
-  font-size: 1.6rem;
+  font-size: 1.1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  p {
+    padding: 0 5px;
+    width: 100%;
+    text-align: left;
+  }
 `;

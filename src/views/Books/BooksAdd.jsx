@@ -13,9 +13,9 @@ import { publishersState } from "../../state/publishers/publishers";
 
 export default function BooksAdd() {
   const dispatch = useDispatch();
-  const publishers = useSelector(publishersState);
-  const authors = useSelector(authorsState);
-  const books = useSelector(booksState);
+  const { publishers } = useSelector(publishersState);
+  const { authors } = useSelector(authorsState);
+  const { books } = useSelector(booksState);
   const [message, setMessage] = useState("");
   const initalFormState = {
     title: "",
@@ -64,8 +64,8 @@ export default function BooksAdd() {
     }
 
     if (
-      books.books.length > 0 &&
-      books.books.findIndex(item => item.isbn === convertedISBN) !== -1
+      books.length > 0 &&
+      books.findIndex(item => item.isbn === convertedISBN) !== -1
     ) {
       return setMessage("Istnieje już książka o podanym ISBN");
     }
@@ -88,7 +88,7 @@ export default function BooksAdd() {
     });
   }
 
-  if (authors.authors.length === 0) {
+  if (authors.length === 0) {
     return (
       <Layout title="Dodawanie książek" pathToBack="/books" message={message}>
         <Info>
@@ -97,7 +97,7 @@ export default function BooksAdd() {
       </Layout>
     );
   }
-  if (publishers.publishers.length === 0) {
+  if (publishers.length === 0) {
     return (
       <Layout title="Dodawanie książek" pathToBack="/books" message={message}>
         <Info>
@@ -147,7 +147,7 @@ export default function BooksAdd() {
             <option value="Wybierz autora" disabled>
               Wybierz autora
             </option>
-            {authors.authors.map((item, index) => (
+            {authors.map((item, index) => (
               <option value={item.id} key={"AuthorOptionNR" + index}>
                 {item.firstName + " " + item.lastName}
               </option>
@@ -165,7 +165,7 @@ export default function BooksAdd() {
             <option value="Wybierz wydawnictwo" disabled>
               Wybierz wydawnictwo
             </option>
-            {publishers.publishers.map((item, index) => (
+            {publishers.map((item, index) => (
               <option value={item.id} key={"PublisherOptionNR" + index}>
                 {`${item.name} (${item.establishmentYear} r.)`}
               </option>

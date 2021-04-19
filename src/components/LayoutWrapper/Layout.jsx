@@ -100,6 +100,9 @@ export default function Layout({
       if (publishers.status === loadingStatus.INITIAL) {
         refreshFn();
       }
+      if (books.status === loadingStatus.INITIAL) {
+        booksDownload();
+      }
     }
     if (location.pathname === "/" || location.pathname.match(/edit/)) {
       if (authors.status === loadingStatus.INITIAL) {
